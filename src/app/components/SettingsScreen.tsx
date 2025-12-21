@@ -46,17 +46,17 @@ export function SettingsScreen({ onBack }: SettingsScreenProps) {
       <div className="flex-1 px-6 py-6 overflow-y-auto space-y-6">
         {/* Appearance */}
         <div>
-          <h3 className="mb-3 text-yellow-400 font-bold">Appearance</h3>
+          <h3 className="mb-3 text-white font-bold drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]">Appearance</h3>
           <Card className="divide-y divide-border bg-card border-border">
             <div className="p-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 {isDarkMode ? (
-                  <div className="p-2 bg-yellow-400/15 rounded-lg">
-                    <Moon className="w-5 h-5 text-yellow-400" />
+                  <div className="p-2 bg-white/15 rounded-lg">
+                    <Moon className="w-5 h-5 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
                   </div>
                 ) : (
-                  <div className="p-2 bg-yellow-500/15 rounded-lg">
-                    <Sun className="w-5 h-5 text-yellow-500" />
+                  <div className="p-2 bg-white/15 rounded-lg">
+                    <Sun className="w-5 h-5 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
                   </div>
                 )}
                 <div>
@@ -76,12 +76,12 @@ export function SettingsScreen({ onBack }: SettingsScreenProps) {
 
         {/* Notifications */}
         <div>
-          <h3 className="mb-3 text-yellow-400 font-bold">Notifications</h3>
+          <h3 className="mb-3 text-white font-bold drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]">Notifications</h3>
           <Card className="divide-y divide-border bg-card border-border">
             <div className="p-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-yellow-400/15 rounded-lg">
-                  <Bell className="w-5 h-5 text-yellow-400" />
+                <div className="p-2 bg-white/15 rounded-lg">
+                  <Bell className="w-5 h-5 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
                 </div>
                 <div>
                   <p className="font-semibold">Push Notifications</p>
@@ -126,12 +126,12 @@ export function SettingsScreen({ onBack }: SettingsScreenProps) {
 
         {/* Privacy & Security */}
         <div>
-          <h3 className="mb-3 text-yellow-400 font-bold">Privacy & Security</h3>
+          <h3 className="mb-3 text-white font-bold drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]">Privacy & Security</h3>
           <Card className="divide-y divide-border bg-card border-border">
             <button className="p-4 flex items-center justify-between w-full hover:bg-accent/50 transition-colors">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-yellow-400/15 rounded-lg">
-                  <Shield className="w-5 h-5 text-yellow-400" />
+                <div className="p-2 bg-white/15 rounded-lg">
+                  <Shield className="w-5 h-5 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
                 </div>
                 <div className="text-left">
                   <p className="font-semibold">Privacy Policy</p>
@@ -143,8 +143,8 @@ export function SettingsScreen({ onBack }: SettingsScreenProps) {
             </button>
             <button className="p-4 flex items-center justify-between w-full hover:bg-accent/50 transition-colors">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-yellow-400/15 rounded-lg">
-                  <Shield className="w-5 h-5 text-yellow-400" />
+                <div className="p-2 bg-white/15 rounded-lg">
+                  <Shield className="w-5 h-5 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
                 </div>
                 <div className="text-left">
                   <p className="font-semibold">Data Management</p>
@@ -159,12 +159,12 @@ export function SettingsScreen({ onBack }: SettingsScreenProps) {
 
         {/* Support */}
         <div>
-          <h3 className="mb-3 text-yellow-400 font-bold">Support</h3>
+          <h3 className="mb-3 text-white font-bold drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]">Support</h3>
           <Card className="divide-y divide-border bg-card border-border">
             <button className="p-4 flex items-center justify-between w-full hover:bg-accent/50 transition-colors">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-yellow-400/15 rounded-lg">
-                  <HelpCircle className="w-5 h-5 text-yellow-400" />
+                <div className="p-2 bg-white/15 rounded-lg">
+                  <HelpCircle className="w-5 h-5 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
                 </div>
                 <div className="text-left">
                   <p className="font-semibold">Help Center</p>
@@ -176,8 +176,8 @@ export function SettingsScreen({ onBack }: SettingsScreenProps) {
             </button>
             <button className="p-4 flex items-center justify-between w-full hover:bg-accent/50 transition-colors">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-yellow-400/15 rounded-lg">
-                  <Info className="w-5 h-5 text-yellow-400" />
+                <div className="p-2 bg-white/15 rounded-lg">
+                  <Info className="w-5 h-5 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
                 </div>
                 <div className="text-left">
                   <p className="font-semibold">About Forcheck</p>
@@ -192,7 +192,7 @@ export function SettingsScreen({ onBack }: SettingsScreenProps) {
 
         {/* App Info */}
         <div className="pb-6">
-          <Card className="p-4 bg-gradient-to-br from-yellow-500/15 to-amber-500/10 border-yellow-400/30 text-center shadow-lg">
+          <Card className="p-4 bg-gradient-to-br from-white/15 to-gray-100/10 border-white/30 text-center shadow-lg">
             <p className="text-sm text-muted-foreground font-medium">
               Made with ❤️ for calisthenics athletes
             </p>

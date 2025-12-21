@@ -55,18 +55,18 @@ export default function App() {
     <div className="dark h-screen w-full max-w-md mx-auto bg-background text-foreground flex flex-col overflow-hidden">
       {/* Top Brand Bar with Streak Counter */}
       {currentView !== 'settings' && (
-        <div className="px-6 pt-6 pb-3 border-b border-border bg-gradient-to-r from-white/5 to-transparent relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl" />
+        <div className="px-6 pt-6 pb-3 border-b border-border bg-gradient-to-r from-whitwhite/5 to-transparent relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-whitwhite/10 rounded-full blur-3xl" />
           <div className="relative flex items-center justify-between">
-            <h1 className="text-2xl tracking-tight bg-gradient-to-r from-white via-white/90 to-white/80 bg-clip-text text-transparent font-bold drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">
+            <h1 className="text-2xl tracking-tight bg-gradient-to-r from-whitehite via-grawhit/910 to-gwhit/8ay20 bg-clip-text text-transparent font-bold drop-shadow-[0_0_15px_rgba(255,255,255,0.5)] drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">
               Forcheck
             </h1>
             {/* Streak Counter */}
-            <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-white/20 to-white/15 rounded-full border border-white/30 shadow-[0_0_20px_rgba(255,255,255,0.3)]">
-              <Flame className="w-5 h-5 text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]" />
+            <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-whitehite/20 to-grwhity/11 rounded-full border border-whitwhite/30 shadow-[0_0_20px_rg shadow-white/20ba(255,255,255,0.3)]">
+              <Flame className="w-5 h-5 text-whitwhite drop-shad drop-shadow-[[0_0__10_8px_rgba(255,255,255,0.8)]px_rgba(255,255,255,0.8)]" />
               <div className="flex flex-col items-center leading-none">
-                <span className="text-lg font-bold text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]">{currentStreak}</span>
-                <span className="text-[10px] text-white/80">day streak</span>
+                <span className="text-lg font-bold text-whitwhite drop-shad drop-shadow-[[0__0_8px_rgba(255,255,255,0.6)]_8px_rgba(255,255,255,0.6)]">{currentStreak}</span>
+                <span className="text-[10px] text-grawhit20">day streak</span>
               </div>
             </div>
           </div>
@@ -92,7 +92,7 @@ export default function App() {
                   onClick={() => handleTabChange(tab.id)}
                   className={`flex flex-col items-center gap-1 px-4 py-2 rounded-lg transition-all ${
                     isActive
-                      ? 'text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.6)]'
+                      ? 'text-whitwhite drop-shad drop-shadow-[[0__0_10px_rgba(255,255,255,0.6)]_10px_rgba(255,255,255,0.6)]'
                       : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >

@@ -1,27 +1,51 @@
-import { User, TrendingUp, Award, Settings, LogOut, ChevronRight, Target, Shield, BarChart3 } from 'lucide-react';
-import { Card } from './ui/card';
-import { Button } from './ui/button';
+import {
+  User,
+  TrendingUp,
+  Award,
+  Settings,
+  LogOut,
+  ChevronRight,
+  Target,
+  Brain,
+  TrendingDown,
+  Shield,
+  BarChart3,
+} from "lucide-react";
+import { Card } from "./ui/card";
+import { Button } from "./ui/button";
 
 interface ProfileScreenProps {
   onOpenSettings: () => void;
 }
 
-export function ProfileScreen({ onOpenSettings }: ProfileScreenProps) {
+export function ProfileScreen({
+  onOpenSettings,
+}: ProfileScreenProps) {
   const achievements = [
-    { name: '7 Day Streak', icon: '🔥', unlocked: true },
-    { name: 'First Analysis', icon: '🎯', unlocked: true },
-    { name: 'Perfect Form', icon: '⭐', unlocked: true },
-    { name: '30 Workouts', icon: '💪', unlocked: false },
-    { name: 'Consistency King', icon: '👑', unlocked: false },
-    { name: 'Form Master', icon: '🏆', unlocked: false },
+    { name: "7 Day Streak", icon: "🔥", unlocked: true },
+    { name: "First Analysis", icon: "🎯", unlocked: true },
+    { name: "Perfect Form", icon: "⭐", unlocked: true },
+    { name: "30 Workouts", icon: "💪", unlocked: false },
+    { name: "Consistency King", icon: "👑", unlocked: false },
+    { name: "Form Master", icon: "🏆", unlocked: false },
   ];
 
-  // Mock form trend data (last 14 days)
+  // Form quality trend data (last 14 days)
   const formTrend = {
-    direction: 'up' as 'up' | 'down' | 'stable',
-    change: '+5',
-    current: 87,
+    direction: "up" as "up" | "down" | "stable",
+    change: "+5",
+    scores: [
+      78, 80, 82, 79, 83, 85, 84, 87, 86, 88, 87, 89, 90, 87,
+    ],
   };
+
+  // User goal and level
+  const userGoal = "Strength";
+  const userLevel = "Intermediate";
+
+  // AI calibration
+  const videosAnalyzed = 12;
+  const aiConfidence = "High";
 
   return (
     <div className="flex flex-col h-full">
@@ -36,85 +60,129 @@ export function ProfileScreen({ onOpenSettings }: ProfileScreenProps) {
       {/* Main Content */}
       <div className="flex-1 px-6 pb-6 overflow-y-auto space-y-6">
         {/* User Info Card */}
-        <Card className="p-6 bg-gradient-to-br from-white/15 to-white/10 border-white/40 shadow-[0_0_30px_rgba(255,255,255,0.2)]">
-          <div className="flex items-center gap-4">
-            <div className="w-20 h-20 rounded-full bg-white/30 flex items-center justify-center border-2 border-white shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+        <Card className="p-6 bg-gradient-to-br from-white/15 to-gray-100/10 border-white/40 shadow-xl shadow-white/10">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="w-20 h-20 rounded-full bg-white/30 flex items-center justify-center border-2 border-white/50 shadow-lg shadow-white/20">
               <User className="w-10 h-10 text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]" />
             </div>
             <div className="flex-1">
               <h2 className="mb-1">Alex Johnson</h2>
-              <p className="text-sm text-muted-foreground font-medium">Member since Jan 2024</p>
+              <p className="text-sm text-muted-foreground font-medium">
+                Member since Jan 2024
+              </p>
+            </div>
+          </div>
+
+          {/* Goal & Level Section */}
+          <div className="grid grid-cols-2 gap-3 pt-4 border-t border-white/20">
+            <div className="flex items-center gap-2">
+              <Target className="w-4 h-4 text-white/70" />
+              <div>
+                <p className="text-xs text-gray-400">Goal</p>
+                <p className="text-sm font-bold text-white">
+                  {userGoal}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Award className="w-4 h-4 text-white/70" />
+              <div>
+                <p className="text-xs text-gray-400">Level</p>
+                <p className="text-sm font-bold text-white">
+                  {userLevel}
+                </p>
+              </div>
             </div>
           </div>
         </Card>
 
-        {/* Goal & Level - MUST ADD */}
-        <Card className="p-5 bg-gradient-to-br from-white/10 to-white/5 border-white/30 shadow-[0_0_20px_rgba(255,255,255,0.1)]">
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Target className="w-5 h-5 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
-                <span className="text-sm text-white/80 font-medium">Goal</span>
-              </div>
-              <span className="px-3 py-1 bg-white/20 border border-white/30 rounded-full text-sm font-bold text-white">
-                Strength
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <BarChart3 className="w-5 h-5 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
-                <span className="text-sm text-white/80 font-medium">Level</span>
-              </div>
-              <span className="px-3 py-1 bg-white/20 border border-white/30 rounded-full text-sm font-bold text-white">
-                Intermediate
-              </span>
-            </div>
-          </div>
-        </Card>
-
-        {/* AI Trust / Calibration - MUST ADD */}
-        <Card className="p-4 bg-gradient-to-br from-green-500/15 to-emerald-500/10 border-green-400/30">
+        {/* AI Trust / Calibration Card */}
+        <Card className="p-4 bg-gradient-to-r from-blue-500/15 to-cyan-500/10 border-blue-400/30 shadow-lg">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-400/20 rounded-lg">
-              <Shield className="w-5 h-5 text-green-400" />
+            <div className="p-2 bg-blue-500/20 rounded-lg">
+              <Brain className="w-5 h-5 text-blue-400" />
             </div>
-            <div>
-              <p className="text-sm font-bold text-green-400">AI calibrated with 12 videos</p>
-              <p className="text-xs text-green-300/80">Form confidence: High</p>
+            <div className="flex-1">
+              <p className="text-sm font-bold text-blue-300">
+                AI calibrated with {videosAnalyzed} videos
+              </p>
+              <p className="text-xs text-blue-400/80">
+                Form confidence:{" "}
+                <span className="font-bold text-blue-300">
+                  {aiConfidence}
+                </span>
+              </p>
             </div>
           </div>
         </Card>
 
-        {/* Form Quality Trend - KILLER FEATURE */}
-        <Card className="p-5 bg-gradient-to-br from-white/15 to-white/10 border-white/40 shadow-[0_0_25px_rgba(255,255,255,0.2)]">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="text-white font-bold mb-1 drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">Form Score Trend</h3>
-              <p className="text-xs text-muted-foreground">Last 14 days</p>
-            </div>
-            <div className="text-right">
-              <div className="flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-green-400" />
-                <span className="text-2xl font-bold text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">{formTrend.current}</span>
+        {/* Form Quality Trend - Killer Feature */}
+        <div>
+          <h3 className="mb-4 flex items-center gap-2">
+            <TrendingUp className="w-5 h-5 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
+            Form Score Trend
+          </h3>
+          <Card className="p-5 bg-gradient-to-br from-white/15 to-gray-100/10 border-white/40 shadow-xl shadow-white/10">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <p className="text-xs text-muted-foreground font-medium mb-1">
+                  Last 14 Days
+                </p>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-3xl font-bold text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">
+                    {
+                      formTrend.scores[
+                        formTrend.scores.length - 1
+                      ]
+                    }
+                  </span>
+                  <span className="text-sm text-green-400 font-bold flex items-center gap-1">
+                    {formTrend.direction === "up" ? (
+                      <>
+                        <TrendingUp className="w-4 h-4" />
+                        {formTrend.change}
+                      </>
+                    ) : formTrend.direction === "down" ? (
+                      <>
+                        <TrendingDown className="w-4 h-4 text-red-400" />
+                        {formTrend.change}
+                      </>
+                    ) : (
+                      <span className="text-gray-400">
+                        Stable
+                      </span>
+                    )}
+                  </span>
+                </div>
               </div>
-              <p className="text-xs text-green-400 font-semibold">{formTrend.change} pts</p>
             </div>
-          </div>
-          
-          {/* Simple mini graph visualization */}
-          <div className="flex items-end gap-1 h-16">
-            {[72, 75, 73, 78, 80, 79, 82, 85, 83, 86, 84, 88, 86, 87].map((score, index) => {
-              const height = (score / 100) * 100;
-              return (
-                <div
-                  key={index}
-                  className="flex-1 bg-gradient-to-t from-white/60 to-white/80 rounded-t shadow-[0_0_10px_rgba(255,255,255,0.4)]"
-                  style={{ height: `${height}%` }}
-                />
-              );
-            })}
-          </div>
-        </Card>
+
+            {/* Mini Graph */}
+            <div className="flex items-end justify-between h-20 gap-1">
+              {formTrend.scores.map((score, index) => {
+                const maxScore = Math.max(...formTrend.scores);
+                const minScore = Math.min(...formTrend.scores);
+                const range = maxScore - minScore || 1;
+                const heightPercent =
+                  ((score - minScore) / range) * 100;
+
+                return (
+                  <div
+                    key={index}
+                    className="flex-1 bg-gradient-to-t from-white/40 to-white/20 rounded-t-sm hover:from-white/60 hover:to-white/40 transition-all border-t-2 border-white/60 shadow-md"
+                    style={{
+                      height: `${Math.max(heightPercent, 20)}%`,
+                    }}
+                    title={`Day ${index + 1}: ${score}`}
+                  />
+                );
+              })}
+            </div>
+            <p className="text-xs text-center text-gray-400 mt-3 font-medium">
+              Your form is improving consistently! Keep it up.
+            </p>
+          </Card>
+        </div>
 
         {/* Stats Grid */}
         <div>
@@ -123,24 +191,34 @@ export function ProfileScreen({ onOpenSettings }: ProfileScreenProps) {
             <Card className="p-4 bg-card border-border">
               <div className="flex items-center gap-2 mb-2">
                 <TrendingUp className="w-4 h-4 text-green-500" />
-                <p className="text-sm text-muted-foreground">Total Workouts</p>
+                <p className="text-sm text-muted-foreground font-medium">
+                  Total Workouts
+                </p>
               </div>
-              <p className="text-2xl">28</p>
+              <p className="text-2xl font-bold">28</p>
             </Card>
             <Card className="p-4 bg-card border-border">
               <div className="flex items-center gap-2 mb-2">
                 <Award className="w-4 h-4 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
-                <p className="text-sm text-muted-foreground font-medium">Avg Form Score</p>
+                <p className="text-sm text-muted-foreground font-medium">
+                  Avg Form Score
+                </p>
               </div>
-              <p className="text-2xl text-white font-bold drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">87</p>
+              <p className="text-2xl text-white font-bold drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]">
+                87
+              </p>
             </Card>
             <Card className="p-4 bg-card border-border">
-              <p className="text-sm text-muted-foreground mb-2">Current Streak</p>
-              <p className="text-2xl">7 days</p>
+              <p className="text-sm text-muted-foreground mb-2 font-medium">
+                Current Streak
+              </p>
+              <p className="text-2xl font-bold">7 days</p>
             </Card>
             <Card className="p-4 bg-card border-border">
-              <p className="text-sm text-muted-foreground mb-2">Best Streak</p>
-              <p className="text-2xl">14 days</p>
+              <p className="text-sm text-muted-foreground mb-2 font-medium">
+                Best Streak
+              </p>
+              <p className="text-2xl font-bold">14 days</p>
             </Card>
           </div>
         </div>
@@ -154,11 +232,13 @@ export function ProfileScreen({ onOpenSettings }: ProfileScreenProps) {
                 key={index}
                 className={`aspect-square rounded-lg flex flex-col items-center justify-center p-3 transition-all ${
                   achievement.unlocked
-                    ? 'bg-white/15 border border-white/40 shadow-[0_0_20px_rgba(255,255,255,0.2)]'
-                    : 'bg-secondary/50 border border-border opacity-50'
+                    ? "bg-white/15 border border-white/40 shadow-lg shadow-white/5"
+                    : "bg-secondary/50 border border-border opacity-50"
                 }`}
               >
-                <div className="text-3xl mb-2">{achievement.icon}</div>
+                <div className="text-3xl mb-2">
+                  {achievement.icon}
+                </div>
                 <p className="text-xs text-center leading-tight font-semibold">
                   {achievement.name}
                 </p>
@@ -172,16 +252,26 @@ export function ProfileScreen({ onOpenSettings }: ProfileScreenProps) {
           <h3 className="mb-4">Personal Records</h3>
           <Card className="divide-y divide-border bg-card border-border">
             <div className="p-4 flex items-center justify-between">
-              <span className="text-sm font-medium">Pull-ups</span>
-              <span className="text-white font-bold drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">15 reps</span>
+              <span className="text-sm font-medium">
+                Pull-ups
+              </span>
+              <span className="text-white font-bold drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]">
+                15 reps
+              </span>
             </div>
             <div className="p-4 flex items-center justify-between">
-              <span className="text-sm font-medium">Push-ups</span>
-              <span className="text-white font-bold drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">50 reps</span>
+              <span className="text-sm font-medium">
+                Push-ups
+              </span>
+              <span className="text-white font-bold drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]">
+                50 reps
+              </span>
             </div>
             <div className="p-4 flex items-center justify-between">
               <span className="text-sm font-medium">Plank</span>
-              <span className="text-white font-bold drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">2:30 min</span>
+              <span className="text-white font-bold drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]">
+                2:30 min
+              </span>
             </div>
           </Card>
         </div>
