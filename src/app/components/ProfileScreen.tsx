@@ -1,65 +1,199 @@
-import {
-  User,
-  TrendingUp,
-  Award,
-  Settings,
-  LogOut,
-  ChevronRight,
-  Target,
-  Brain,
-  TrendingDown,
-  Shield,
-  BarChart3,
-} from "lucide-react";
-import { Card } from "./ui/card";
-import { Button } from "./ui/button";
+import { User, TrendingUp, Award, Settings, ChevronRight, Target, Crown, Trophy, Flame, Users, BarChart3, Calendar } from 'lucide-react';
+import { Card } from './ui/card';
+import { Button } from './ui/button';
+import { Exercise, MuscleStatus } from '../App';
 
 interface ProfileScreenProps {
   onOpenSettings: () => void;
+  exercises: Exercise[];
+  muscleStatus: MuscleStatus[];
 }
 
-export function ProfileScreen({
-  onOpenSettings,
-}: ProfileScreenProps) {
+export function ProfileScreen({ onOpenSettings, exercises, muscleStatus }: ProfileScreenProps) {
   const achievements = [
-    { name: "7 Day Streak", icon: "🔥", unlocked: true },
-    { name: "First Analysis", icon: "🎯", unlocked: true },
-    { name: "Perfect Form", icon: "⭐", unlocked: true },
-    { name: "30 Workouts", icon: "💪", unlocked: false },
-    { name: "Consistency King", icon: "👑", unlocked: false },
-    { name: "Form Master", icon: "🏆", unlocked: false },
+    { name: '7 Day Streak', icon: '🔥', unlocked: true },
+    { name: 'First Score 90+', icon: '⭐', unlocked: true },
+    { name: 'Perfect Form', icon: '🎯', unlocked: true },
+    { name: '30 Workouts', icon: '💪', unlocked: false },
+    { name: 'Consistency King', icon: '👑', unlocked: false },
+    { name: 'Score Master', icon: '🏆', unlocked: false },
   ];
 
-  // Form quality trend data (last 14 days)
-  const formTrend = {
-    direction: "up" as "up" | "down" | "stable",
-    change: "+5",
-    scores: [
-      78, 80, 82, 79, 83, 85, 84, 87, 86, 88, 87, 89, 90, 87,
-    ],
+  // Score history (last 30 days)
+  const dailyScores = [
+    85, 88, 92, 78, 90, 87, 91, 84, 89, 93, 86, 88, 90, 85, 87,
+    91, 89, 94, 86, 88, 90, 87, 85, 92, 89, 91, 88, 86, 90, 87
+  ];
+
+  const weeklyAverage = 88;
+  const monthlyAverage = 87;
+
+  // Get color based on score
+  const getScoreColor = (score: number) => {
+    if (score >= 80) return 'bg-green-500';
+    if (score >= 60) return 'bg-yellow-500';
+    return 'bg-red-500';
   };
 
-  // User goal and level
-  const userGoal = "Strength";
-  const userLevel = "Intermediate";
+  const getScoreTextColor = (score: number) => {
+    if (score >= 80) return 'text-green-400';
+    if (score >= 60) return 'text-yellow-400';
+    return 'text-red-400';
+  };
 
-  // AI calibration
-  const videosAnalyzed = 12;
-  const aiConfidence = "High";
+  // Body heat map muscles - expanded list with workout tracking
+  // Get muscles worked today from the actual exercises prop
+  const exerciseMuscleMap: Record<string, string[]> = {
+    'Pull-ups': ['back', 'biceps', 'forearms'],
+    'Push-ups': ['chest', 'triceps', 'front-delts'],
+    'Dips': ['chest', 'triceps', 'front-delts'],
+    'Pistol Squats': ['quads', 'glutes', 'core'],
+    'Squats': ['quads', 'glutes', 'hamstrings'],
+    'Lunges': ['quads', 'glutes', 'hamstrings'],
+    'Bench Press': ['chest', 'triceps', 'front-delts'],
+    'Deadlifts': ['back', 'hamstrings', 'glutes', 'traps'],
+    'Rows': ['back', 'biceps', 'rear-delts'],
+    'Shoulder Press': ['front-delts', 'side-delts', 'triceps'],
+    'Bicep Curls': ['biceps', 'forearms'],
+    'Tricep Extensions': ['triceps'],
+    'Plank': ['core'],
+    'Leg Press': ['quads', 'glutes', 'hamstrings'],
+    'Lat Pulldown': ['back', 'biceps'],
+    'Pike Push-ups': ['front-delts', 'side-delts', 'triceps'],
+    'Handstand Push-ups': ['front-delts', 'side-delts', 'triceps'],
+    'Muscle-ups': ['back', 'chest', 'triceps', 'biceps'],
+    'L-sits': ['core', 'forearms'],
+    'Front Lever': ['back', 'core', 'biceps'],
+    'Back Lever': ['back', 'biceps', 'core'],
+    'Box Jumps': ['quads', 'glutes', 'calves'],
+    'Burpees': ['chest', 'triceps', 'quads', 'core'],
+    'Mountain Climbers': ['core', 'quads'],
+    'Jumping Jacks': ['side-delts', 'calves'],
+    'Jump Rope': ['calves', 'forearms'],
+    'Face Pulls': ['rear-delts', 'traps'],
+    'Shrugs': ['traps'],
+    'Calf Raises': ['calves'],
+    'Romanian Deadlifts': ['hamstrings', 'glutes', 'back'],
+    'Lateral Raises': ['side-delts'],
+    'Front Raises': ['front-delts'],
+    'Reverse Flyes': ['rear-delts'],
+  };
+
+  // Get muscles worked today
+  const musclesWorkedToday = new Set<string>();
+  exercises.forEach(exercise => {
+    const muscles = exerciseMuscleMap[exercise.name] || [];
+    muscles.forEach(muscle => musclesWorkedToday.add(muscle));
+  });
+
+  const muscles = [
+    { 
+      name: 'Chest', 
+      key: 'chest',
+      status: musclesWorkedToday.has('chest') ? 'sore' : 'ready', 
+      lastTrained: musclesWorkedToday.has('chest') ? 'Today' : '2 days ago' 
+    },
+    { 
+      name: 'Back', 
+      key: 'back',
+      status: musclesWorkedToday.has('back') ? 'sore' : 'ready', 
+      lastTrained: musclesWorkedToday.has('back') ? 'Today' : '3 days ago' 
+    },
+    { 
+      name: 'Front Delts', 
+      key: 'front-delts',
+      status: musclesWorkedToday.has('front-delts') ? 'sore' : 'ready', 
+      lastTrained: musclesWorkedToday.has('front-delts') ? 'Today' : '3 days ago' 
+    },
+    { 
+      name: 'Side Delts', 
+      key: 'side-delts',
+      status: musclesWorkedToday.has('side-delts') ? 'sore' : 'ready', 
+      lastTrained: musclesWorkedToday.has('side-delts') ? 'Today' : '5 days ago' 
+    },
+    { 
+      name: 'Rear Delts', 
+      key: 'rear-delts',
+      status: musclesWorkedToday.has('rear-delts') ? 'sore' : 'ready', 
+      lastTrained: musclesWorkedToday.has('rear-delts') ? 'Today' : '4 days ago' 
+    },
+    { 
+      name: 'Triceps', 
+      key: 'triceps',
+      status: musclesWorkedToday.has('triceps') ? 'sore' : 'ready', 
+      lastTrained: musclesWorkedToday.has('triceps') ? 'Today' : 'Yesterday' 
+    },
+    { 
+      name: 'Biceps', 
+      key: 'biceps',
+      status: musclesWorkedToday.has('biceps') ? 'sore' : 'ready', 
+      lastTrained: musclesWorkedToday.has('biceps') ? 'Today' : 'Yesterday' 
+    },
+    { 
+      name: 'Core', 
+      key: 'core',
+      status: musclesWorkedToday.has('core') ? 'sore' : 'ready', 
+      lastTrained: musclesWorkedToday.has('core') ? 'Today' : 'Yesterday' 
+    },
+    { 
+      name: 'Forearms', 
+      key: 'forearms',
+      status: musclesWorkedToday.has('forearms') ? 'sore' : 'ready', 
+      lastTrained: musclesWorkedToday.has('forearms') ? 'Today' : '2 days ago' 
+    },
+    { 
+      name: 'Traps', 
+      key: 'traps',
+      status: musclesWorkedToday.has('traps') ? 'sore' : 'ready', 
+      lastTrained: musclesWorkedToday.has('traps') ? 'Today' : '6 days ago' 
+    },
+    { 
+      name: 'Quads', 
+      key: 'quads',
+      status: musclesWorkedToday.has('quads') ? 'sore' : 'ready', 
+      lastTrained: musclesWorkedToday.has('quads') ? 'Today' : '4 days ago' 
+    },
+    { 
+      name: 'Hamstrings', 
+      key: 'hamstrings',
+      status: musclesWorkedToday.has('hamstrings') ? 'sore' : 'ready', 
+      lastTrained: musclesWorkedToday.has('hamstrings') ? 'Today' : '5 days ago' 
+    },
+    { 
+      name: 'Glutes', 
+      key: 'glutes',
+      status: musclesWorkedToday.has('glutes') ? 'sore' : 'ready', 
+      lastTrained: musclesWorkedToday.has('glutes') ? 'Today' : '4 days ago' 
+    },
+    { 
+      name: 'Calves', 
+      key: 'calves',
+      status: musclesWorkedToday.has('calves') ? 'sore' : 'ready', 
+      lastTrained: musclesWorkedToday.has('calves') ? 'Today' : '7 days ago' 
+    },
+  ];
 
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="px-6 py-8">
-        <h1 className="mb-2 font-bold">Profile</h1>
-        <p className="text-muted-foreground font-medium">
-          Track your progress and achievements
-        </p>
+      <div className="px-6 py-8 flex items-center justify-between">
+        <div>
+          <h1 className="mb-2 font-bold">Profile</h1>
+          <p className="text-muted-foreground font-medium">@alexjohnson</p>
+        </div>
+        <Button
+          onClick={onOpenSettings}
+          variant="ghost"
+          size="icon"
+          className="text-white/70 hover:text-white"
+        >
+          <Settings className="w-5 h-5" />
+        </Button>
       </div>
 
       {/* Main Content */}
       <div className="flex-1 px-6 pb-6 overflow-y-auto space-y-6">
-        {/* User Info Card */}
+        {/* Profile Header Card */}
         <Card className="p-6 bg-gradient-to-br from-white/15 to-gray-100/10 border-white/40 shadow-xl shadow-white/10">
           <div className="flex items-center gap-4 mb-4">
             <div className="w-20 h-20 rounded-full bg-white/30 flex items-center justify-center border-2 border-white/50 shadow-lg shadow-white/20">
@@ -67,178 +201,177 @@ export function ProfileScreen({
             </div>
             <div className="flex-1">
               <h2 className="mb-1">Alex Johnson</h2>
-              <p className="text-sm text-muted-foreground font-medium">
-                Member since Jan 2024
-              </p>
-            </div>
-          </div>
-
-          {/* Goal & Level Section */}
-          <div className="grid grid-cols-2 gap-3 pt-4 border-t border-white/20">
-            <div className="flex items-center gap-2">
-              <Target className="w-4 h-4 text-white/70" />
-              <div>
-                <p className="text-xs text-gray-400">Goal</p>
-                <p className="text-sm font-bold text-white">
-                  {userGoal}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Award className="w-4 h-4 text-white/70" />
-              <div>
-                <p className="text-xs text-gray-400">Level</p>
-                <p className="text-sm font-bold text-white">
-                  {userLevel}
-                </p>
-              </div>
-            </div>
-          </div>
-        </Card>
-
-        {/* AI Trust / Calibration Card */}
-        <Card className="p-4 bg-gradient-to-r from-blue-500/15 to-cyan-500/10 border-blue-400/30 shadow-lg">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-500/20 rounded-lg">
-              <Brain className="w-5 h-5 text-blue-400" />
-            </div>
-            <div className="flex-1">
-              <p className="text-sm font-bold text-blue-300">
-                AI calibrated with {videosAnalyzed} videos
-              </p>
-              <p className="text-xs text-blue-400/80">
-                Form confidence:{" "}
-                <span className="font-bold text-blue-300">
-                  {aiConfidence}
-                </span>
-              </p>
-            </div>
-          </div>
-        </Card>
-
-        {/* Form Quality Trend - Killer Feature */}
-        <div>
-          <h3 className="mb-4 flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
-            Form Score Trend
-          </h3>
-          <Card className="p-5 bg-gradient-to-br from-white/15 to-gray-100/10 border-white/40 shadow-xl shadow-white/10">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <p className="text-xs text-muted-foreground font-medium mb-1">
-                  Last 14 Days
-                </p>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-bold text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">
-                    {
-                      formTrend.scores[
-                        formTrend.scores.length - 1
-                      ]
-                    }
-                  </span>
-                  <span className="text-sm text-green-400 font-bold flex items-center gap-1">
-                    {formTrend.direction === "up" ? (
-                      <>
-                        <TrendingUp className="w-4 h-4" />
-                        {formTrend.change}
-                      </>
-                    ) : formTrend.direction === "down" ? (
-                      <>
-                        <TrendingDown className="w-4 h-4 text-red-400" />
-                        {formTrend.change}
-                      </>
-                    ) : (
-                      <span className="text-gray-400">
-                        Stable
-                      </span>
-                    )}
-                  </span>
+              <div className="flex gap-4 text-sm">
+                <div>
+                  <p className="text-muted-foreground">Weight</p>
+                  <p className="font-bold text-white">185 lbs</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Goal</p>
+                  <p className="font-bold text-white">Strength</p>
                 </div>
               </div>
             </div>
+          </div>
+          
+          <div className="pt-4 border-t border-white/20">
+            <p className="text-xs text-gray-400">Member since Jan 2024</p>
+          </div>
+        </Card>
 
-            {/* Mini Graph */}
-            <div className="flex items-end justify-between h-20 gap-1">
-              {formTrend.scores.map((score, index) => {
-                const maxScore = Math.max(...formTrend.scores);
-                const minScore = Math.min(...formTrend.scores);
-                const range = maxScore - minScore || 1;
-                const heightPercent =
-                  ((score - minScore) / range) * 100;
-
-                return (
-                  <div
-                    key={index}
-                    className="flex-1 bg-gradient-to-t from-white/40 to-white/20 rounded-t-sm hover:from-white/60 hover:to-white/40 transition-all border-t-2 border-white/60 shadow-md"
-                    style={{
-                      height: `${Math.max(heightPercent, 20)}%`,
-                    }}
-                    title={`Day ${index + 1}: ${score}`}
-                  />
-                );
-              })}
+        {/* Body Heat Map */}
+        <div>
+          <h3 className="mb-4 flex items-center gap-2">
+            <Target className="w-5 h-5 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
+            Muscle Status
+          </h3>
+          <Card className="p-4 bg-card border-border">
+            <div className="grid grid-cols-2 gap-2">
+              {muscles.map((muscle, index) => (
+                <div
+                  key={index}
+                  className={`p-3 rounded-lg border ${
+                    muscle.status === 'ready'
+                      ? 'bg-green-500/15 border-green-500/30'
+                      : muscle.status === 'sore'
+                      ? 'bg-red-500/15 border-red-500/30'
+                      : 'bg-yellow-500/15 border-yellow-500/30'
+                  }`}
+                >
+                  <p className="font-semibold text-sm">{muscle.name}</p>
+                  <p className="text-xs text-muted-foreground">{muscle.lastTrained}</p>
+                  <p className={`text-xs font-bold mt-1 ${
+                    muscle.status === 'ready' ? 'text-green-400' :
+                    muscle.status === 'sore' ? 'text-red-400' :
+                    'text-yellow-400'
+                  }`}>
+                    {muscle.status === 'ready' ? 'Ready' : muscle.status === 'sore' ? 'Sore' : 'Recovering'}
+                  </p>
+                </div>
+              ))}
             </div>
-            <p className="text-xs text-center text-gray-400 mt-3 font-medium">
-              Your form is improving consistently! Keep it up.
-            </p>
           </Card>
         </div>
 
-        {/* Stats Grid */}
+        {/* Score History */}
         <div>
-          <h3 className="mb-4">Your Stats</h3>
-          <div className="grid grid-cols-2 gap-3">
-            <Card className="p-4 bg-card border-border">
-              <div className="flex items-center gap-2 mb-2">
-                <TrendingUp className="w-4 h-4 text-green-500" />
-                <p className="text-sm text-muted-foreground font-medium">
-                  Total Workouts
-                </p>
-              </div>
-              <p className="text-2xl font-bold">28</p>
-            </Card>
-            <Card className="p-4 bg-card border-border">
-              <div className="flex items-center gap-2 mb-2">
-                <Award className="w-4 h-4 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
-                <p className="text-sm text-muted-foreground font-medium">
-                  Avg Form Score
-                </p>
-              </div>
-              <p className="text-2xl text-white font-bold drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]">
-                87
+          <h3 className="mb-4 flex items-center gap-2">
+            <BarChart3 className="w-5 h-5 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
+            Score History
+          </h3>
+          
+          {/* Averages */}
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            <Card className="p-4 bg-gradient-to-br from-white/10 to-white/5 border-white/30">
+              <p className="text-xs text-muted-foreground mb-1">Weekly Avg</p>
+              <p className={`text-3xl font-bold ${getScoreTextColor(weeklyAverage)} drop-shadow-[0_0_10px_rgba(255,255,255,0.4)]`}>
+                {weeklyAverage}
               </p>
             </Card>
-            <Card className="p-4 bg-card border-border">
-              <p className="text-sm text-muted-foreground mb-2 font-medium">
-                Current Streak
+            <Card className="p-4 bg-gradient-to-br from-white/10 to-white/5 border-white/30">
+              <p className="text-xs text-muted-foreground mb-1">Monthly Avg</p>
+              <p className={`text-3xl font-bold ${getScoreTextColor(monthlyAverage)} drop-shadow-[0_0_10px_rgba(255,255,255,0.4)]`}>
+                {monthlyAverage}
               </p>
-              <p className="text-2xl font-bold">7 days</p>
-            </Card>
-            <Card className="p-4 bg-card border-border">
-              <p className="text-sm text-muted-foreground mb-2 font-medium">
-                Best Streak
-              </p>
-              <p className="text-2xl font-bold">14 days</p>
             </Card>
           </div>
+
+          {/* Score Grid (Last 30 Days) */}
+          <Card className="p-4 bg-card border-border">
+            <div className="grid grid-cols-10 gap-1">
+              {dailyScores.map((score, index) => (
+                <div
+                  key={index}
+                  className={`aspect-square rounded-sm ${getScoreColor(score)} opacity-${Math.floor(score / 10)}0 hover:scale-110 transition-transform cursor-pointer`}
+                  title={`Day ${index + 1}: ${score}`}
+                />
+              ))}
+            </div>
+            <Button variant="ghost" className="w-full mt-3 text-xs">
+              Show More
+            </Button>
+          </Card>
         </div>
 
-        {/* Achievements */}
+        {/* Stats & Achievements */}
         <div>
-          <h3 className="mb-4">Achievements</h3>
+          <h3 className="mb-4 flex items-center gap-2">
+            <Trophy className="w-5 h-5 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
+            Stats & Achievements
+          </h3>
+          
+          {/* Key Stats */}
+          <Card className="p-4 bg-card border-border mb-3">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">Current Streak</p>
+                <div className="flex items-center gap-2">
+                  <Flame className="w-4 h-4 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
+                  <p className="text-xl font-bold text-white">7 days</p>
+                </div>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">Best Streak</p>
+                <div className="flex items-center gap-2">
+                  <Crown className="w-4 h-4 text-yellow-400" />
+                  <p className="text-xl font-bold text-white">14 days</p>
+                </div>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">Favorite Exercise</p>
+                <p className="font-bold text-white">Pull-ups</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">Best Exercise</p>
+                <p className="font-bold text-white">Dips (96 avg)</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">Total Workouts</p>
+                <p className="text-xl font-bold text-white">28</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">Improvement</p>
+                <div className="flex items-center gap-1">
+                  <TrendingUp className="w-4 h-4 text-green-400" />
+                  <p className="font-bold text-green-400">+8%</p>
+                </div>
+              </div>
+            </div>
+          </Card>
+
+          {/* Top 5 PRs */}
+          <Card className="divide-y divide-border bg-card border-border mb-3">
+            <div className="p-3 bg-white/5">
+              <h4 className="font-bold text-sm">Top 5 PRs</h4>
+            </div>
+            {[
+              { exercise: 'Pull-ups', value: '15 reps' },
+              { exercise: 'Push-ups', value: '50 reps' },
+              { exercise: 'Dips', value: '30 reps' },
+              { exercise: 'Plank', value: '2:30 min' },
+              { exercise: 'Pistol Squats', value: '12 reps' },
+            ].map((pr, index) => (
+              <div key={index} className="p-3 flex items-center justify-between">
+                <span className="text-sm font-medium">{pr.exercise}</span>
+                <span className="text-white font-bold drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]">
+                  {pr.value}
+                </span>
+              </div>
+            ))}
+          </Card>
+
+          {/* Achievements */}
           <div className="grid grid-cols-3 gap-3">
             {achievements.map((achievement, index) => (
               <div
                 key={index}
                 className={`aspect-square rounded-lg flex flex-col items-center justify-center p-3 transition-all ${
                   achievement.unlocked
-                    ? "bg-white/15 border border-white/40 shadow-lg shadow-white/5"
-                    : "bg-secondary/50 border border-border opacity-50"
+                    ? 'bg-white/15 border border-white/40 shadow-lg shadow-white/5'
+                    : 'bg-secondary/50 border border-border opacity-50'
                 }`}
               >
-                <div className="text-3xl mb-2">
-                  {achievement.icon}
-                </div>
+                <div className="text-3xl mb-2">{achievement.icon}</div>
                 <p className="text-xs text-center leading-tight font-semibold">
                   {achievement.name}
                 </p>
@@ -247,56 +380,17 @@ export function ProfileScreen({
           </div>
         </div>
 
-        {/* Personal Records */}
-        <div>
-          <h3 className="mb-4">Personal Records</h3>
-          <Card className="divide-y divide-border bg-card border-border">
-            <div className="p-4 flex items-center justify-between">
-              <span className="text-sm font-medium">
-                Pull-ups
-              </span>
-              <span className="text-white font-bold drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]">
-                15 reps
-              </span>
-            </div>
-            <div className="p-4 flex items-center justify-between">
-              <span className="text-sm font-medium">
-                Push-ups
-              </span>
-              <span className="text-white font-bold drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]">
-                50 reps
-              </span>
-            </div>
-            <div className="p-4 flex items-center justify-between">
-              <span className="text-sm font-medium">Plank</span>
-              <span className="text-white font-bold drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]">
-                2:30 min
-              </span>
-            </div>
-          </Card>
-        </div>
-
-        {/* Settings Options */}
-        <div className="space-y-2">
-          <Button
-            onClick={onOpenSettings}
-            variant="outline"
-            className="w-full justify-between h-12 border-white/40 hover:bg-white/10 hover:border-white/60"
-          >
-            <div className="flex items-center">
-              <Settings className="w-4 h-4 mr-3 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
-              <span className="font-semibold">Settings</span>
-            </div>
-            <ChevronRight className="w-4 h-4 text-muted-foreground" />
-          </Button>
-          <Button
-            variant="outline"
-            className="w-full justify-start h-12 text-destructive-foreground hover:text-destructive-foreground hover:bg-destructive/10"
-          >
-            <LogOut className="w-4 h-4 mr-3" />
-            Sign Out
-          </Button>
-        </div>
+        {/* Friends */}
+        <Button
+          variant="outline"
+          className="w-full justify-between h-12 border-white/40 hover:bg-white/10 hover:border-white/60"
+        >
+          <div className="flex items-center">
+            <Users className="w-4 h-4 mr-3 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
+            <span className="font-semibold">Friends</span>
+          </div>
+          <ChevronRight className="w-4 h-4 text-muted-foreground" />
+        </Button>
       </div>
     </div>
   );

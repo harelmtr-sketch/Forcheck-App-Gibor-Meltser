@@ -1,23 +1,61 @@
 import { useState } from 'react';
-import { Activity, Calendar, Apple, User, Flame } from 'lucide-react';
-import { AnalyzeScreen } from './components/AnalyzeScreen';
-import { PlanScreen } from './components/PlanScreen';
-import { DietScreen } from './components/DietScreen';
+import { Camera, BarChart3, User } from 'lucide-react';
+import { CameraScreen } from './components/CameraScreen';
+import { DailyScreen } from './components/DailyScreen';
 import { ProfileScreen } from './components/ProfileScreen';
 import { SettingsScreen } from './components/SettingsScreen';
 
-type Tab = 'train' | 'plan' | 'diet' | 'profile';
+type Tab = 'camera' | 'daily' | 'profile';
 type View = Tab | 'settings';
 
+export interface Exercise {
+  name: string;
+  sets: number;
+  reps: number;
+  score: number;
+}
+
+export interface MuscleStatus {
+  name: string;
+  key: string;
+  status: 'ready' | 'sore' | 'recovering';
+  lastTrained: string;
+  setsToday: number; // Track volume today
+}
+
 export default function App() {
-  const [activeTab, setActiveTab] = useState<Tab>('train');
-  const [currentView, setCurrentView] = useState<View>('train');
-  const [currentStreak, setCurrentStreak] = useState(7); // Streak counter
+  const [activeTab, setActiveTab] = useState<Tab>('daily');
+  const [currentView, setCurrentView] = useState<View>('daily');
+  
+  // Lift exercises state up to App level so it persists across tab changes
+  const [exercises, setExercises] = useState<Exercise[]>([
+    { name: 'Pull-ups', sets: 4, reps: 12, score: 94 },
+    { name: 'Push-ups', sets: 4, reps: 20, score: 88 },
+    { name: 'Dips', sets: 3, reps: 15, score: 45 },
+    { name: 'Pistol Squats', sets: 3, reps: 10, score: 91 },
+  ]);
+
+  // Track muscle soreness status
+  const [muscleStatus, setMuscleStatus] = useState<MuscleStatus[]>([
+    { name: 'Chest', key: 'chest', status: 'ready', lastTrained: '2 days ago', setsToday: 0 },
+    { name: 'Back', key: 'back', status: 'sore', lastTrained: 'Yesterday', setsToday: 0 },
+    { name: 'Front Delts', key: 'front-delts', status: 'ready', lastTrained: '3 days ago', setsToday: 0 },
+    { name: 'Side Delts', key: 'side-delts', status: 'ready', lastTrained: '5 days ago', setsToday: 0 },
+    { name: 'Rear Delts', key: 'rear-delts', status: 'ready', lastTrained: '4 days ago', setsToday: 0 },
+    { name: 'Triceps', key: 'triceps', status: 'recovering', lastTrained: 'Yesterday', setsToday: 0 },
+    { name: 'Biceps', key: 'biceps', status: 'recovering', lastTrained: 'Yesterday', setsToday: 0 },
+    { name: 'Core', key: 'core', status: 'ready', lastTrained: '3 days ago', setsToday: 0 },
+    { name: 'Forearms', key: 'forearms', status: 'ready', lastTrained: '2 days ago', setsToday: 0 },
+    { name: 'Traps', key: 'traps', status: 'ready', lastTrained: '6 days ago', setsToday: 0 },
+    { name: 'Quads', key: 'quads', status: 'ready', lastTrained: '4 days ago', setsToday: 0 },
+    { name: 'Hamstrings', key: 'hamstrings', status: 'ready', lastTrained: '5 days ago', setsToday: 0 },
+    { name: 'Glutes', key: 'glutes', status: 'ready', lastTrained: '4 days ago', setsToday: 0 },
+    { name: 'Calves', key: 'calves', status: 'ready', lastTrained: '7 days ago', setsToday: 0 },
+  ]);
 
   const tabs = [
-    { id: 'train' as Tab, label: 'Train', icon: Activity },
-    { id: 'plan' as Tab, label: 'Plan', icon: Calendar },
-    { id: 'diet' as Tab, label: 'Diet', icon: Apple },
+    { id: 'camera' as Tab, label: 'Camera', icon: Camera },
+    { id: 'daily' as Tab, label: 'Daily', icon: BarChart3 },
     { id: 'profile' as Tab, label: 'Profile', icon: User },
   ];
 
@@ -36,43 +74,21 @@ export default function App() {
 
   const renderScreen = () => {
     switch (currentView) {
-      case 'train':
-        return <AnalyzeScreen />;
-      case 'plan':
-        return <PlanScreen />;
-      case 'diet':
-        return <DietScreen />;
+      case 'camera':
+        return <CameraScreen />;
+      case 'daily':
+        return <DailyScreen exercises={exercises} setExercises={setExercises} muscleStatus={muscleStatus} setMuscleStatus={setMuscleStatus} />;
       case 'profile':
-        return <ProfileScreen onOpenSettings={handleOpenSettings} />;
+        return <ProfileScreen onOpenSettings={handleOpenSettings} exercises={exercises} muscleStatus={muscleStatus} />;
       case 'settings':
         return <SettingsScreen onBack={handleBackFromSettings} />;
       default:
-        return <AnalyzeScreen />;
+        return <DailyScreen exercises={exercises} setExercises={setExercises} muscleStatus={muscleStatus} setMuscleStatus={setMuscleStatus} />;
     }
   };
 
   return (
     <div className="dark h-screen w-full max-w-md mx-auto bg-background text-foreground flex flex-col overflow-hidden">
-      {/* Top Brand Bar with Streak Counter */}
-      {currentView !== 'settings' && (
-        <div className="px-6 pt-6 pb-3 border-b border-border bg-gradient-to-r from-whitwhite/5 to-transparent relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-whitwhite/10 rounded-full blur-3xl" />
-          <div className="relative flex items-center justify-between">
-            <h1 className="text-2xl tracking-tight bg-gradient-to-r from-whitehite via-grawhit/910 to-gwhit/8ay20 bg-clip-text text-transparent font-bold drop-shadow-[0_0_15px_rgba(255,255,255,0.5)] drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">
-              Forcheck
-            </h1>
-            {/* Streak Counter */}
-            <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-whitehite/20 to-grwhity/11 rounded-full border border-whitwhite/30 shadow-[0_0_20px_rg shadow-white/20ba(255,255,255,0.3)]">
-              <Flame className="w-5 h-5 text-whitwhite drop-shad drop-shadow-[[0_0__10_8px_rgba(255,255,255,0.8)]px_rgba(255,255,255,0.8)]" />
-              <div className="flex flex-col items-center leading-none">
-                <span className="text-lg font-bold text-whitwhite drop-shad drop-shadow-[[0__0_8px_rgba(255,255,255,0.6)]_8px_rgba(255,255,255,0.6)]">{currentStreak}</span>
-                <span className="text-[10px] text-grawhit20">day streak</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Main Content Area */}
       <div className="flex-1 overflow-hidden">
         {renderScreen()}
@@ -92,7 +108,7 @@ export default function App() {
                   onClick={() => handleTabChange(tab.id)}
                   className={`flex flex-col items-center gap-1 px-4 py-2 rounded-lg transition-all ${
                     isActive
-                      ? 'text-whitwhite drop-shad drop-shadow-[[0__0_10px_rgba(255,255,255,0.6)]_10px_rgba(255,255,255,0.6)]'
+                      ? 'text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.6)]'
                       : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
