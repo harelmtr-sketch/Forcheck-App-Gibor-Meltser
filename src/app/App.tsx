@@ -15,6 +15,13 @@ export interface Exercise {
   score: number;
 }
 
+export interface Meal {
+  name: string;
+  calories: number;
+  protein: number;
+  score: number;
+}
+
 export interface MuscleStatus {
   name: string;
   key: string;
@@ -28,12 +35,10 @@ export default function App() {
   const [currentView, setCurrentView] = useState<View>('daily');
   
   // Lift exercises state up to App level so it persists across tab changes
-  const [exercises, setExercises] = useState<Exercise[]>([
-    { name: 'Pull-ups', sets: 4, reps: 12, score: 94 },
-    { name: 'Push-ups', sets: 4, reps: 20, score: 88 },
-    { name: 'Dips', sets: 3, reps: 15, score: 45 },
-    { name: 'Pistol Squats', sets: 3, reps: 10, score: 91 },
-  ]);
+  const [exercises, setExercises] = useState<Exercise[]>([]);
+
+  // Lift meals state up to App level so it persists across tab changes
+  const [meals, setMeals] = useState<Meal[]>([]);
 
   // Track muscle soreness status
   const [muscleStatus, setMuscleStatus] = useState<MuscleStatus[]>([
@@ -77,13 +82,13 @@ export default function App() {
       case 'camera':
         return <CameraScreen />;
       case 'daily':
-        return <DailyScreen exercises={exercises} setExercises={setExercises} muscleStatus={muscleStatus} setMuscleStatus={setMuscleStatus} />;
+        return <DailyScreen exercises={exercises} setExercises={setExercises} meals={meals} setMeals={setMeals} muscleStatus={muscleStatus} setMuscleStatus={setMuscleStatus} />;
       case 'profile':
         return <ProfileScreen onOpenSettings={handleOpenSettings} exercises={exercises} muscleStatus={muscleStatus} />;
       case 'settings':
         return <SettingsScreen onBack={handleBackFromSettings} />;
       default:
-        return <DailyScreen exercises={exercises} setExercises={setExercises} muscleStatus={muscleStatus} setMuscleStatus={setMuscleStatus} />;
+        return <DailyScreen exercises={exercises} setExercises={setExercises} meals={meals} setMeals={setMeals} muscleStatus={muscleStatus} setMuscleStatus={setMuscleStatus} />;
     }
   };
 
