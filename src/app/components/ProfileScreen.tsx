@@ -1,7 +1,8 @@
-import { User, TrendingUp, Award, Settings, ChevronRight, Target, Crown, Trophy, Flame, Users, BarChart3, Calendar } from 'lucide-react';
+import { User, TrendingUp, Award, Settings, ChevronRight, Target, Crown, Trophy, Flame, Users, BarChart3, Calendar, Edit2, Check } from 'lucide-react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Exercise, MuscleStatus } from '../App';
+import { useState } from 'react';
 
 interface ProfileScreenProps {
   onOpenSettings: () => void;
@@ -10,6 +11,11 @@ interface ProfileScreenProps {
 }
 
 export function ProfileScreen({ onOpenSettings, exercises, muscleStatus }: ProfileScreenProps) {
+  const [weight, setWeight] = useState('185');
+  const [goal, setGoal] = useState('Strength');
+  const [isEditingWeight, setIsEditingWeight] = useState(false);
+  const [isEditingGoal, setIsEditingGoal] = useState(false);
+
   const achievements = [
     { name: '7 Day Streak', icon: '🔥', unlocked: true },
     { name: 'First Score 90+', icon: '⭐', unlocked: true },
@@ -174,18 +180,18 @@ export function ProfileScreen({ onOpenSettings, exercises, muscleStatus }: Profi
   ];
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="px-6 py-8 flex items-center justify-between">
+    <div className="flex flex-col h-full bg-gradient-to-b from-black to-gray-900">
+      {/* Header - Enhanced with gradient */}
+      <div className="px-6 py-8 flex items-center justify-between border-b border-white/10">
         <div>
-          <h1 className="mb-2 font-bold">Profile</h1>
-          <p className="text-muted-foreground font-medium">@alexjohnson</p>
+          <h1 className="mb-2 font-bold text-2xl bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">Profile</h1>
+          <p className="text-muted-foreground font-medium">@harelmeltser</p>
         </div>
         <Button
           onClick={onOpenSettings}
           variant="ghost"
           size="icon"
-          className="text-white/70 hover:text-white"
+          className="text-white/70 hover:text-white hover:bg-white/10 transition-all"
         >
           <Settings className="w-5 h-5" />
         </Button>
@@ -193,29 +199,116 @@ export function ProfileScreen({ onOpenSettings, exercises, muscleStatus }: Profi
 
       {/* Main Content */}
       <div className="flex-1 px-6 pb-6 overflow-y-auto space-y-6">
-        {/* Profile Header Card */}
-        <Card className="p-6 bg-gradient-to-br from-white/15 to-gray-100/10 border-white/40 shadow-xl shadow-white/10">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-20 h-20 rounded-full bg-white/30 flex items-center justify-center border-2 border-white/50 shadow-lg shadow-white/20">
-              <User className="w-10 h-10 text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]" />
-            </div>
-            <div className="flex-1">
-              <h2 className="mb-1">Alex Johnson</h2>
-              <div className="flex gap-4 text-sm">
-                <div>
-                  <p className="text-muted-foreground">Weight</p>
-                  <p className="font-bold text-white">185 lbs</p>
+        {/* Profile Header Card - Redesigned */}
+        <Card className="relative p-8 bg-gradient-to-br from-blue-500/20 via-purple-500/15 to-pink-500/10 border-2 border-white/30 shadow-2xl shadow-blue-500/20 overflow-hidden">
+          {/* Animated background effect */}
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-400/5 to-purple-500/5 animate-pulse" />
+          
+          <div className="relative">
+            <div className="flex items-center gap-5 mb-6">
+              {/* Enhanced profile picture */}
+              <div className="relative">
+                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center border-4 border-white/40 shadow-2xl shadow-blue-500/40">
+                  <User className="w-12 h-12 text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.9)]" />
                 </div>
-                <div>
-                  <p className="text-muted-foreground">Goal</p>
-                  <p className="font-bold text-white">Strength</p>
+                {/* Online status indicator */}
+                <div className="absolute bottom-1 right-1 w-5 h-5 bg-green-400 border-4 border-gray-900 rounded-full shadow-lg shadow-green-400/50" />
+              </div>
+              
+              <div className="flex-1">
+                <h2 className="text-3xl mb-2 font-bold bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent drop-shadow-lg">
+                  Harel Meltser
+                </h2>
+                <div className="flex gap-6 mt-3">
+                  {/* Weight - Editable */}
+                  <div className="flex-1">
+                    <p className="text-xs text-blue-200/70 mb-1 font-semibold uppercase tracking-wider">Weight</p>
+                    <div className="flex items-center gap-2 bg-white/10 rounded-lg px-3 py-2 border border-white/20">
+                      {isEditingWeight ? (
+                        <input
+                          type="text"
+                          value={weight}
+                          onChange={(e) => setWeight(e.target.value)}
+                          className="bg-transparent font-bold text-white text-lg outline-none w-16"
+                          autoFocus
+                        />
+                      ) : (
+                        <span className="font-bold text-white text-lg">{weight} lbs</span>
+                      )}
+                      <button
+                        onClick={() => {
+                          if (isEditingWeight) {
+                            setIsEditingWeight(false);
+                          } else {
+                            setIsEditingWeight(true);
+                          }
+                        }}
+                        className="ml-auto p-1 hover:bg-white/20 rounded transition-all"
+                      >
+                        {isEditingWeight ? (
+                          <Check className="w-4 h-4 text-green-400" />
+                        ) : (
+                          <Edit2 className="w-4 h-4 text-blue-300" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {/* Goal - Editable */}
+                  <div className="flex-1">
+                    <p className="text-xs text-purple-200/70 mb-1 font-semibold uppercase tracking-wider">Goal</p>
+                    <div className="flex items-center gap-2 bg-white/10 rounded-lg px-3 py-2 border border-white/20">
+                      {isEditingGoal ? (
+                        <input
+                          type="text"
+                          value={goal}
+                          onChange={(e) => setGoal(e.target.value)}
+                          className="bg-transparent font-bold text-white text-lg outline-none w-24"
+                          autoFocus
+                        />
+                      ) : (
+                        <span className="font-bold text-white text-lg">{goal}</span>
+                      )}
+                      <button
+                        onClick={() => {
+                          if (isEditingGoal) {
+                            setIsEditingGoal(false);
+                          } else {
+                            setIsEditingGoal(true);
+                          }
+                        }}
+                        className="ml-auto p-1 hover:bg-white/20 rounded transition-all"
+                      >
+                        {isEditingGoal ? (
+                          <Check className="w-4 h-4 text-green-400" />
+                        ) : (
+                          <Edit2 className="w-4 h-4 text-purple-300" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          
-          <div className="pt-4 border-t border-white/20">
-            <p className="text-xs text-gray-400">Member since Jan 2024</p>
+            
+            {/* Quick Stats Row */}
+            <div className="grid grid-cols-3 gap-3 pt-5 border-t border-white/20">
+              <div className="text-center">
+                <p className="text-2xl font-bold text-white drop-shadow-lg">28</p>
+                <p className="text-xs text-white/60 mt-1">Workouts</p>
+              </div>
+              <div className="text-center">
+                <div className="flex items-center justify-center gap-1 mb-1">
+                  <span className="text-2xl drop-shadow-[0_0_15px_rgba(251,146,60,0.8)]">🔥</span>
+                  <p className="text-2xl font-bold text-orange-300 drop-shadow-[0_0_15px_rgba(251,146,60,0.8)]">7</p>
+                </div>
+                <p className="text-xs text-orange-200/70 font-semibold">Day Streak</p>
+              </div>
+              <div className="text-center">
+                <p className="text-2xl font-bold text-green-300 drop-shadow-[0_0_10px_rgba(74,222,128,0.6)]">88</p>
+                <p className="text-xs text-white/60 mt-1">Avg Score</p>
+              </div>
+            </div>
           </div>
         </Card>
 
@@ -303,18 +396,18 @@ export function ProfileScreen({ onOpenSettings, exercises, muscleStatus }: Profi
           {/* Key Stats */}
           <Card className="p-4 bg-card border-border mb-3">
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-xs text-muted-foreground mb-1">Current Streak</p>
+              <div className="p-3 rounded-lg bg-gradient-to-br from-orange-500/15 to-red-500/10 border border-orange-400/30">
+                <p className="text-xs text-orange-200/70 mb-1">Current Streak</p>
                 <div className="flex items-center gap-2">
-                  <Flame className="w-4 h-4 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
-                  <p className="text-xl font-bold text-white">7 days</p>
+                  <Flame className="w-4 h-4 text-orange-400 drop-shadow-[0_0_8px_rgba(251,146,60,0.6)]" />
+                  <p className="text-xl font-bold text-orange-300">7 days</p>
                 </div>
               </div>
-              <div>
-                <p className="text-xs text-muted-foreground mb-1">Best Streak</p>
+              <div className="p-3 rounded-lg bg-gradient-to-br from-yellow-500/15 to-amber-500/10 border border-yellow-400/30">
+                <p className="text-xs text-yellow-200/70 mb-1">Best Streak</p>
                 <div className="flex items-center gap-2">
-                  <Crown className="w-4 h-4 text-yellow-400" />
-                  <p className="text-xl font-bold text-white">14 days</p>
+                  <Crown className="w-4 h-4 text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.6)]" />
+                  <p className="text-xl font-bold text-yellow-300">14 days</p>
                 </div>
               </div>
               <div>
@@ -329,11 +422,11 @@ export function ProfileScreen({ onOpenSettings, exercises, muscleStatus }: Profi
                 <p className="text-xs text-muted-foreground mb-1">Total Workouts</p>
                 <p className="text-xl font-bold text-white">28</p>
               </div>
-              <div>
-                <p className="text-xs text-muted-foreground mb-1">Improvement</p>
+              <div className="p-3 rounded-lg bg-gradient-to-br from-green-500/15 to-emerald-500/10 border border-green-400/30">
+                <p className="text-xs text-green-200/70 mb-1">Improvement</p>
                 <div className="flex items-center gap-1">
-                  <TrendingUp className="w-4 h-4 text-green-400" />
-                  <p className="font-bold text-green-400">+8%</p>
+                  <TrendingUp className="w-4 h-4 text-green-400 drop-shadow-[0_0_8px_rgba(74,222,128,0.6)]" />
+                  <p className="font-bold text-green-300">+8%</p>
                 </div>
               </div>
             </div>

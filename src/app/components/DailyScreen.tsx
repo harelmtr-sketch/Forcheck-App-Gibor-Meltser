@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { TrendingUp, TrendingDown, Dumbbell, Apple, Users, Share2, Lightbulb, Camera, ChevronRight, PlayCircle, Plus, Search, X, Trash2 } from 'lucide-react';
+import { TrendingUp, TrendingDown, Dumbbell, Apple, Users, Share2, Lightbulb, Camera, ChevronRight, PlayCircle, Plus, Search, X, Trash2, Flame } from 'lucide-react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Progress } from './ui/progress';
@@ -25,12 +25,98 @@ export function DailyScreen({ exercises, setExercises, meals, setMeals, muscleSt
   const [reps, setReps] = useState('10');
   const [exerciseScore, setExerciseScore] = useState('85');
   const [isRecordingCustom, setIsRecordingCustom] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<'push' | 'pull' | 'legs' | 'upper' | 'full' | null>(null);
+  const [showTemplates, setShowTemplates] = useState(false);
   
   // Meal form state
   const [mealName, setMealName] = useState('');
   const [calories, setCalories] = useState('');
   const [protein, setProtein] = useState('');
   const [mealScore, setMealScore] = useState('85');
+
+  // Workout templates
+  const workoutTemplates = {
+    push: {
+      name: 'Push Day',
+      description: 'Chest, Shoulders & Triceps',
+      duration: '45 min',
+      color: 'from-blue-500/20 to-cyan-500/10',
+      borderColor: 'border-blue-400/40',
+      textColor: 'text-blue-300',
+      icon: '💪',
+      exercises: [
+        { name: 'Push-ups', sets: 4, reps: 20, score: 85 },
+        { name: 'Pike Push-ups', sets: 3, reps: 12, score: 85 },
+        { name: 'Dips', sets: 3, reps: 15, score: 85 },
+        { name: 'Lateral Raises', sets: 3, reps: 15, score: 85 },
+        { name: 'Tricep Extensions', sets: 3, reps: 12, score: 85 },
+      ]
+    },
+    pull: {
+      name: 'Pull Day',
+      description: 'Back & Biceps',
+      duration: '40 min',
+      color: 'from-green-500/20 to-emerald-500/10',
+      borderColor: 'border-green-400/40',
+      textColor: 'text-green-300',
+      icon: '🏋️',
+      exercises: [
+        { name: 'Pull-ups', sets: 4, reps: 12, score: 85 },
+        { name: 'Rows', sets: 4, reps: 12, score: 85 },
+        { name: 'Face Pulls', sets: 3, reps: 15, score: 85 },
+        { name: 'Bicep Curls', sets: 3, reps: 12, score: 85 },
+        { name: 'Shrugs', sets: 3, reps: 15, score: 85 },
+      ]
+    },
+    legs: {
+      name: 'Leg Day',
+      description: 'Quads, Glutes & Hamstrings',
+      duration: '50 min',
+      color: 'from-orange-500/20 to-red-500/10',
+      borderColor: 'border-orange-400/40',
+      textColor: 'text-orange-300',
+      icon: '🦵',
+      exercises: [
+        { name: 'Squats', sets: 4, reps: 15, score: 85 },
+        { name: 'Lunges', sets: 3, reps: 12, score: 85 },
+        { name: 'Romanian Deadlifts', sets: 3, reps: 12, score: 85 },
+        { name: 'Box Jumps', sets: 3, reps: 10, score: 85 },
+        { name: 'Calf Raises', sets: 4, reps: 20, score: 85 },
+      ]
+    },
+    upper: {
+      name: 'Upper Body',
+      description: 'Full Upper Body Strength',
+      duration: '55 min',
+      color: 'from-purple-500/20 to-pink-500/10',
+      borderColor: 'border-purple-400/40',
+      textColor: 'text-purple-300',
+      icon: '💪',
+      exercises: [
+        { name: 'Pull-ups', sets: 4, reps: 12, score: 85 },
+        { name: 'Push-ups', sets: 4, reps: 20, score: 85 },
+        { name: 'Dips', sets: 3, reps: 15, score: 85 },
+        { name: 'Pike Push-ups', sets: 3, reps: 12, score: 85 },
+        { name: 'Rows', sets: 4, reps: 12, score: 85 },
+      ]
+    },
+    full: {
+      name: 'Full Body',
+      description: 'Complete Body Workout',
+      duration: '60 min',
+      color: 'from-yellow-500/20 to-amber-500/10',
+      borderColor: 'border-yellow-400/40',
+      textColor: 'text-yellow-300',
+      icon: '🔥',
+      exercises: [
+        { name: 'Deadlifts', sets: 4, reps: 8, score: 85 },
+        { name: 'Push-ups', sets: 3, reps: 20, score: 85 },
+        { name: 'Pull-ups', sets: 3, reps: 10, score: 85 },
+        { name: 'Squats', sets: 4, reps: 15, score: 85 },
+        { name: 'Plank', sets: 3, reps: 60, score: 85 },
+      ]
+    }
+  };
 
   // Exercise database with muscle targets
   const exerciseMuscleMap: Record<string, string[]> = {
@@ -259,67 +345,186 @@ export function DailyScreen({ exercises, setExercises, meals, setMeals, muscleSt
 
   // Show empty state if no data logged
   if (exercises.length === 0 && meals.length === 0 && !isRecordingCustom) {
-    return (
-      <div className="flex flex-col h-full">
-        {/* Header */}
-        <div className="px-6 py-8">
-          <h1 className="mb-2 font-bold">Today's Workout</h1>
-          <p className="text-muted-foreground font-medium">
-            Upper Body Strength • 45 min
-          </p>
-        </div>
+    // Show template selection
+    if (showTemplates) {
+      return (
+        <div className="flex flex-col h-full bg-gradient-to-b from-black via-gray-900 to-black">
+          {/* Header - Enhanced */}
+          <div className="px-6 py-6 border-b border-white/10">
+            <Button
+              variant="ghost"
+              onClick={() => setShowTemplates(false)}
+              className="mb-4 px-0 hover:bg-white/10"
+            >
+              ← Back
+            </Button>
+            <h1 className="mb-2 font-bold text-2xl bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">Choose Your Workout</h1>
+            <p className="text-muted-foreground font-medium">
+              Select a pre-built template
+            </p>
+          </div>
 
-        {/* Main Content */}
-        <div className="flex-1 px-6 pb-6 overflow-y-auto space-y-6">
-          {/* Commit Button */}
-          <Button 
-            className="w-full h-14 bg-gradient-to-r from-white/20 to-white/15 border border-white/40 hover:from-white/30 hover:to-white/20 shadow-xl shadow-white/10"
-            onClick={() => {
-              // Add pre-planned workout
-              const prePlannedWorkout = [
-                { name: 'Pull-ups', sets: 4, reps: 12, score: 85 },
-                { name: 'Push-ups', sets: 4, reps: 20, score: 85 },
-                { name: 'Dips', sets: 3, reps: 15, score: 85 },
-                { name: 'Pike Push-ups', sets: 3, reps: 12, score: 85 },
-                { name: 'Rows', sets: 4, reps: 12, score: 85 },
-              ];
-              setExercises(prePlannedWorkout);
-            }}
-          >
-            <span className="font-bold text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.6)]">Commit to Workout</span>
-          </Button>
-
-          {/* Record Custom Workout Button */}
-          <Button 
-            variant="outline"
-            className="w-full h-14 border-2 border-white/30 hover:bg-white/10 hover:border-white/50"
-            onClick={() => setIsRecordingCustom(true)}
-          >
-            <Plus className="w-5 h-5 mr-2" />
-            <span className="font-bold">Record Your Custom Workout</span>
-          </Button>
-
-          {/* Exercise Checklist */}
-          <div className="space-y-3">
-            <h3 className="font-bold text-white">Exercises</h3>
-            {['Pull-ups', 'Push-ups', 'Dips', 'Pike Push-ups', 'Rows'].map((exercise, index) => (
-              <Card key={index} className="p-4 bg-card border-border">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="font-semibold">{exercise}</h4>
-                    <p className="text-sm text-muted-foreground">4 sets × 12 reps</p>
+          {/* Template Cards - Enhanced */}
+          <div className="flex-1 px-6 py-6 overflow-y-auto space-y-4">
+            {Object.entries(workoutTemplates).map(([key, template]) => (
+              <Card
+                key={key}
+                className={`relative p-6 bg-gradient-to-br ${template.color} border-2 ${template.borderColor} cursor-pointer hover:scale-[1.02] transition-all shadow-xl overflow-hidden`}
+                onClick={() => {
+                  setSelectedTemplate(key as 'push' | 'pull' | 'legs' | 'upper' | 'full');
+                  setExercises(template.exercises);
+                  setShowTemplates(false);
+                }}
+              >
+                {/* Animated background effect */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent animate-pulse" />
+                
+                <div className="relative">
+                  <div className="flex items-start justify-between mb-3">
+                    <div>
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="text-3xl drop-shadow-lg">{template.icon}</span>
+                        <h3 className={`font-bold text-xl ${template.textColor} drop-shadow-lg`}>{template.name}</h3>
+                      </div>
+                      <p className="text-sm text-white/80 font-medium">{template.description}</p>
+                      <p className="text-xs text-white/60 mt-2 font-semibold">{template.duration}</p>
+                    </div>
+                    <ChevronRight className={`w-6 h-6 ${template.textColor} drop-shadow-lg`} />
                   </div>
-                  <div className="flex gap-2">
-                    <Button size="sm" variant="outline" className="border-white/30">
-                      <Camera className="w-4 h-4" />
-                    </Button>
-                    <Button size="sm" variant="ghost" className="text-xs">
-                      Missing equipment?
-                    </Button>
+                  
+                  {/* Exercise Preview - Enhanced */}
+                  <div className="mt-5 space-y-2 bg-black/20 rounded-lg p-3 border border-white/10">
+                    {template.exercises.slice(0, 3).map((ex, idx) => (
+                      <div key={idx} className="flex items-center gap-3 text-sm text-white/80 font-medium">
+                        <div className="w-2 h-2 rounded-full bg-white/60 shadow-lg" />
+                        <span className="flex-1">{ex.name}</span>
+                        <span className="text-white/50">•</span>
+                        <span className="text-white/60 font-bold">{ex.sets}×{ex.reps}</span>
+                      </div>
+                    ))}
+                    {template.exercises.length > 3 && (
+                      <div className="text-xs text-white/50 ml-5 font-semibold pt-1">
+                        +{template.exercises.length - 3} more exercises
+                      </div>
+                    )}
                   </div>
                 </div>
               </Card>
             ))}
+          </div>
+        </div>
+      );
+    }
+
+    // Initial empty state - Enhanced
+    return (
+      <div className="flex flex-col h-full bg-gradient-to-b from-black via-gray-900 to-black">
+        {/* Header - Enhanced */}
+        <div className="px-6 py-8 border-b border-white/10">
+          <h1 className="mb-2 font-bold text-2xl bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">Today's Workout</h1>
+          <p className="text-muted-foreground font-medium">
+            Choose how you want to train
+          </p>
+        </div>
+
+        {/* Main Content */}
+        <div className="flex-1 px-6 pb-6 overflow-y-auto space-y-4 pt-6">
+          {/* Commit Button - Opens Template Selection - Enhanced */}
+          <Card
+            className="relative p-6 bg-gradient-to-br from-blue-500/20 via-purple-500/15 to-pink-500/10 border-2 border-white/40 hover:from-blue-500/25 hover:via-purple-500/20 hover:to-pink-500/15 shadow-2xl shadow-blue-500/20 cursor-pointer hover:scale-[1.02] transition-all overflow-hidden"
+            onClick={() => setShowTemplates(true)}
+          >
+            {/* Animated background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-400/5 to-purple-500/5 animate-pulse" />
+            
+            <div className="relative flex flex-col items-center gap-2 text-center">
+              <h3 className="font-bold text-xl bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent drop-shadow-lg">
+                Browse Workout Templates
+              </h3>
+              <p className="text-sm text-white/70 font-medium">Push • Pull • Legs • Full Body</p>
+              <ChevronRight className="w-6 h-6 text-white/60 mt-2 drop-shadow-lg" />
+            </div>
+          </Card>
+
+          {/* Record Custom Workout Button - Enhanced */}
+          <Card
+            variant="outline"
+            className="relative p-5 bg-gradient-to-br from-white/10 to-white/5 border-2 border-white/30 hover:bg-white/15 hover:border-white/50 cursor-pointer hover:scale-[1.02] transition-all shadow-xl overflow-hidden"
+            onClick={() => setIsRecordingCustom(true)}
+          >
+            {/* Animated background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent animate-pulse" />
+            
+            <div className="relative flex items-center justify-center gap-3">
+              <Plus className="w-5 h-5 text-white drop-shadow-lg" />
+              <span className="font-bold text-white drop-shadow-lg">Record Your Custom Workout</span>
+            </div>
+          </Card>
+
+          {/* Quick Template Preview - Enhanced */}
+          <div className="mt-6">
+            <h3 className="font-bold text-white mb-4 text-sm uppercase tracking-wider drop-shadow-lg">POPULAR TEMPLATES</h3>
+            <div className="grid grid-cols-2 gap-3">
+              <Card
+                className="relative p-5 bg-gradient-to-br from-blue-500/20 to-cyan-500/10 border-2 border-blue-400/40 cursor-pointer hover:scale-105 transition-all shadow-xl shadow-blue-500/20 overflow-hidden"
+                onClick={() => {
+                  setSelectedTemplate('push');
+                  setExercises(workoutTemplates.push.exercises);
+                }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-400/5 to-cyan-500/5 animate-pulse" />
+                <div className="relative text-center">
+                  <div className="text-4xl mb-2 drop-shadow-lg">💪</div>
+                  <h4 className="font-bold text-blue-300 drop-shadow-lg">Push Day</h4>
+                  <p className="text-xs text-blue-200/60 mt-1 font-semibold">5 exercises</p>
+                </div>
+              </Card>
+              
+              <Card
+                className="relative p-5 bg-gradient-to-br from-green-500/20 to-emerald-500/10 border-2 border-green-400/40 cursor-pointer hover:scale-105 transition-all shadow-xl shadow-green-500/20 overflow-hidden"
+                onClick={() => {
+                  setSelectedTemplate('pull');
+                  setExercises(workoutTemplates.pull.exercises);
+                }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-green-400/5 to-emerald-500/5 animate-pulse" />
+                <div className="relative text-center">
+                  <div className="text-4xl mb-2 drop-shadow-lg">🏋️</div>
+                  <h4 className="font-bold text-green-300 drop-shadow-lg">Pull Day</h4>
+                  <p className="text-xs text-green-200/60 mt-1 font-semibold">5 exercises</p>
+                </div>
+              </Card>
+              
+              <Card
+                className="relative p-5 bg-gradient-to-br from-orange-500/20 to-red-500/10 border-2 border-orange-400/40 cursor-pointer hover:scale-105 transition-all shadow-xl shadow-orange-500/20 overflow-hidden"
+                onClick={() => {
+                  setSelectedTemplate('legs');
+                  setExercises(workoutTemplates.legs.exercises);
+                }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-orange-400/5 to-red-500/5 animate-pulse" />
+                <div className="relative text-center">
+                  <div className="text-4xl mb-2 drop-shadow-lg">🦵</div>
+                  <h4 className="font-bold text-orange-300 drop-shadow-lg">Leg Day</h4>
+                  <p className="text-xs text-orange-200/60 mt-1 font-semibold">5 exercises</p>
+                </div>
+              </Card>
+              
+              <Card
+                className="relative p-5 bg-gradient-to-br from-yellow-500/20 to-amber-500/10 border-2 border-yellow-400/40 cursor-pointer hover:scale-105 transition-all shadow-xl shadow-yellow-500/20 overflow-hidden"
+                onClick={() => {
+                  setSelectedTemplate('full');
+                  setExercises(workoutTemplates.full.exercises);
+                }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/5 to-amber-500/5 animate-pulse" />
+                <div className="relative text-center">
+                  <div className="text-4xl mb-2 drop-shadow-lg">🔥</div>
+                  <h4 className="font-bold text-yellow-300 drop-shadow-lg">Full Body</h4>
+                  <p className="text-xs text-yellow-200/60 mt-1 font-semibold">5 exercises</p>
+                </div>
+              </Card>
+            </div>
           </div>
         </div>
       </div>
@@ -328,81 +533,132 @@ export function DailyScreen({ exercises, setExercises, meals, setMeals, muscleSt
 
   // Post-workout state (daily summary)
   return (
-    <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="px-6 py-8">
-        <h1 className="mb-2 font-bold">Today's Summary</h1>
-        <p className="text-muted-foreground font-medium">
-          Wednesday, Dec 24, 2024
-        </p>
+    <div className="flex flex-col h-full bg-gradient-to-b from-black via-gray-900 to-black">
+      {/* Header - Enhanced */}
+      <div className="px-6 py-8 border-b border-white/10">
+        <h1 className="mb-2 font-bold text-2xl bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">Today's Summary</h1>
+        {selectedTemplate ? (
+          <div className="flex items-center gap-2">
+            <span className="text-2xl">{workoutTemplates[selectedTemplate].icon}</span>
+            <div>
+              <p className={`font-bold ${workoutTemplates[selectedTemplate].textColor}`}>
+                {workoutTemplates[selectedTemplate].name}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {workoutTemplates[selectedTemplate].description} • {workoutTemplates[selectedTemplate].duration}
+              </p>
+            </div>
+          </div>
+        ) : (
+          <p className="text-muted-foreground font-medium">
+            Wednesday, Dec 24, 2024
+          </p>
+        )}
       </div>
 
       {/* Main Content */}
       <div className="flex-1 px-6 pb-6 overflow-y-auto space-y-6">
-        {/* Daily Score */}
-        <Card className="p-6 bg-gradient-to-br from-white/15 to-gray-100/10 border-white/40 shadow-xl shadow-white/10">
-          <div className="text-center">
-            <p className="text-sm text-muted-foreground mb-2 font-medium">Daily Score</p>
-            <div className={`text-7xl font-bold bg-gradient-to-r ${getScoreColor(dailyScore)} bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(255,255,255,0.5)]`}>
-              {dailyScore}
+        {/* Daily Score with Streak */}
+        <div className="grid grid-cols-2 gap-3">
+          <Card className="p-6 bg-gradient-to-br from-white/15 to-gray-100/10 border-white/40 shadow-xl shadow-white/10">
+            <div className="text-center">
+              <p className="text-xs text-muted-foreground mb-2 font-medium">Daily Score</p>
+              <div className={`text-5xl font-bold bg-gradient-to-r ${getScoreColor(dailyScore)} bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(255,255,255,0.5)]`}>
+                {dailyScore}
+              </div>
             </div>
-            <div className="mt-4 h-3 bg-secondary rounded-full overflow-hidden">
-              <div
-                className={`h-full bg-gradient-to-r ${getScoreColor(dailyScore)} shadow-lg`}
-                style={{ width: `${dailyScore}%` }}
-              />
+          </Card>
+
+          <Card className="p-6 bg-gradient-to-br from-orange-500/20 to-red-500/15 border-orange-400/50 shadow-xl shadow-orange-500/20 relative overflow-hidden">
+            {/* Animated glow effect */}
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-400/10 to-red-500/10 animate-pulse" />
+            <div className="relative text-center">
+              <p className="text-xs text-orange-200/70 mb-2 font-medium">Streak</p>
+              <div className="flex items-center justify-center gap-2">
+                <Flame className="w-8 h-8 text-orange-400 drop-shadow-[0_0_12px_rgba(251,146,60,0.8)] animate-pulse" />
+                <span className="text-5xl font-bold text-orange-300 drop-shadow-[0_0_20px_rgba(251,146,60,0.6)]">
+                  7
+                </span>
+              </div>
+              <p className="text-xs text-orange-200/60 mt-1">days</p>
             </div>
-          </div>
-        </Card>
+          </Card>
+        </div>
 
         {/* Workout Today */}
         <div>
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-white flex items-center gap-2">
-              <Dumbbell className="w-5 h-5 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
-              Workout
+              <Dumbbell className="w-5 h-5 text-blue-400 drop-shadow-[0_0_8px_rgba(96,165,250,0.6)]" />
+              <span className="text-blue-300">Workout</span>
             </h3>
             <span className={`text-2xl font-bold ${getScoreTextColor(workoutScore)} drop-shadow-[0_0_10px_rgba(255,255,255,0.4)]`}>
               {workoutScore}
             </span>
           </div>
 
-          <Card className="p-4 bg-card border-border mb-3">
+          <Card className="p-4 bg-gradient-to-br from-blue-500/10 to-cyan-500/5 border-blue-400/30 mb-3">
             <Button variant="ghost" className="w-full justify-between p-0 h-auto hover:bg-transparent">
-              <span className="text-sm font-medium">View detailed breakdown</span>
-              <ChevronRight className="w-4 h-4" />
+              <span className="text-sm font-medium text-blue-200">View detailed breakdown</span>
+              <ChevronRight className="w-4 h-4 text-blue-400" />
             </Button>
           </Card>
 
           <div className="space-y-2">
-            {exercises.map((exercise, index) => (
-              <Card key={index} className="p-4 bg-card border-border">
-                <div className="flex items-center justify-between mb-2">
-                  <div>
-                    <h4 className="font-semibold">{exercise.name}</h4>
-                    <p className="text-sm text-muted-foreground">
-                      {exercise.sets} sets × {exercise.reps} reps
-                    </p>
+            {exercises.map((exercise, index) => {
+              // Assign color based on index
+              const exerciseColors = [
+                { bg: 'from-blue-500/15 to-cyan-500/10', border: 'border-blue-400/30', text: 'text-blue-300' },
+                { bg: 'from-green-500/15 to-emerald-500/10', border: 'border-green-400/30', text: 'text-green-300' },
+                { bg: 'from-purple-500/15 to-pink-500/10', border: 'border-purple-400/30', text: 'text-purple-300' },
+                { bg: 'from-orange-500/15 to-red-500/10', border: 'border-orange-400/30', text: 'text-orange-300' },
+                { bg: 'from-yellow-500/15 to-amber-500/10', border: 'border-yellow-400/30', text: 'text-yellow-300' },
+              ];
+              const colors = exerciseColors[index % exerciseColors.length];
+
+              return (
+                <Card key={index} className={`p-4 bg-gradient-to-br ${colors.bg} ${colors.border} relative`}>
+                  {/* Watch Form Button - Small Circle in Upper Right */}
+                  <button 
+                    className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/10 border border-white/30 hover:bg-white/20 hover:scale-110 transition-all flex items-center justify-center group"
+                    onClick={() => alert(`Opening ${exercise.name} form video...`)}
+                  >
+                    <PlayCircle className="w-4 h-4 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.6)] group-hover:text-white" />
+                  </button>
+
+                  <div className="flex items-start justify-between mb-2 pr-10">
+                    <div>
+                      <h4 className={`font-bold ${colors.text}`}>{exercise.name}</h4>
+                      <p className="text-sm text-white/60 mt-1">
+                        {exercise.sets} sets × {exercise.reps} reps
+                      </p>
+                    </div>
                   </div>
-                  <span className={`text-xl font-bold ${getScoreTextColor(exercise.score)}`}>
-                    {exercise.score}
-                  </span>
-                </div>
-                <Button size="sm" variant="outline" className="w-full mt-2 border-white/30">
-                  <PlayCircle className="w-4 h-4 mr-2" />
-                  Watch correct form
-                </Button>
-                <Button size="sm" variant="ghost" className="w-full mt-2 text-red-400" onClick={() => handleRemoveExercise(index)}>
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  Remove Exercise
-                </Button>
-              </Card>
-            ))}
+                  
+                  <div className="flex items-center justify-between mt-3">
+                    <span className="text-xs text-white/50">Score:</span>
+                    <span className={`text-2xl font-bold ${getScoreTextColor(exercise.score)} drop-shadow-[0_0_10px_rgba(255,255,255,0.4)]`}>
+                      {exercise.score}
+                    </span>
+                  </div>
+
+                  <Button 
+                    size="sm" 
+                    variant="ghost" 
+                    className="w-full mt-3 text-red-400 hover:text-red-300 hover:bg-red-500/10" 
+                    onClick={() => handleRemoveExercise(index)}
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Remove Exercise
+                  </Button>
+                </Card>
+              );
+            })}
             
             {/* Add Exercise Button */}
             <Button 
               variant="outline" 
-              className="w-full h-12 border-dashed border-white/30 hover:bg-white/5 hover:border-white/50"
+              className="w-full h-12 border-dashed border-blue-400/40 hover:bg-blue-500/10 hover:border-blue-400/60 text-blue-300"
               onClick={() => setShowAddExercise(true)}
             >
               <Plus className="w-4 h-4 mr-2" />
@@ -415,8 +671,8 @@ export function DailyScreen({ exercises, setExercises, meals, setMeals, muscleSt
         <div>
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-white flex items-center gap-2">
-              <Apple className="w-5 h-5 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
-              Diet
+              <Apple className="w-5 h-5 text-green-400 drop-shadow-[0_0_8px_rgba(74,222,128,0.6)]" />
+              <span className="text-green-300">Diet</span>
             </h3>
             <span className={`text-2xl font-bold ${getScoreTextColor(dietScore)} drop-shadow-[0_0_10px_rgba(255,255,255,0.4)]`}>
               {dietScore}
@@ -424,13 +680,13 @@ export function DailyScreen({ exercises, setExercises, meals, setMeals, muscleSt
           </div>
 
           {/* Macros */}
-          <Card className="p-4 bg-card border-border mb-3">
+          <Card className="p-4 bg-gradient-to-br from-green-500/10 to-emerald-500/5 border-green-400/30 mb-3">
             <div className="space-y-3">
               {Object.entries(macros).map(([key, value]) => (
                 <div key={key}>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-semibold capitalize">{key}</span>
-                    <span className="text-sm text-muted-foreground">
+                    <span className="text-sm font-semibold capitalize text-green-200">{key}</span>
+                    <span className="text-sm text-green-200/60">
                       {value.current} / {value.target}{key === 'calories' ? '' : 'g'}
                     </span>
                   </div>
@@ -442,30 +698,40 @@ export function DailyScreen({ exercises, setExercises, meals, setMeals, muscleSt
 
           {/* Meals */}
           <div className="space-y-2">
-            {meals.map((meal, index) => (
-              <Card key={index} className="p-4 bg-card border-border">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex-1">
-                    <h4 className="font-semibold">{meal.name}</h4>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {meal.calories} cal • {meal.protein}g protein
-                    </p>
+            {meals.map((meal, index) => {
+              // Assign color based on index
+              const mealColors = [
+                { bg: 'from-green-500/15 to-emerald-500/10', border: 'border-green-400/30', text: 'text-green-300' },
+                { bg: 'from-yellow-500/15 to-amber-500/10', border: 'border-yellow-400/30', text: 'text-yellow-300' },
+                { bg: 'from-orange-500/15 to-red-500/10', border: 'border-orange-400/30', text: 'text-orange-300' },
+              ];
+              const colors = mealColors[index % mealColors.length];
+
+              return (
+                <Card key={index} className={`p-4 bg-gradient-to-br ${colors.bg} ${colors.border}`}>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex-1">
+                      <h4 className={`font-bold ${colors.text}`}>{meal.name}</h4>
+                      <p className="text-xs text-white/60 mt-1">
+                        {meal.calories} cal • {meal.protein}g protein
+                      </p>
+                    </div>
+                    <span className={`text-xl font-bold ${getScoreTextColor(meal.score)} drop-shadow-[0_0_10px_rgba(255,255,255,0.4)]`} >
+                      {meal.score}
+                    </span>
                   </div>
-                  <span className={`text-lg font-bold ${getScoreTextColor(meal.score)}`}>
-                    {meal.score}
-                  </span>
-                </div>
-                <Button size="sm" variant="ghost" className="w-full mt-2 text-red-400" onClick={() => handleRemoveMeal(index)}>
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  Remove Meal
-                </Button>
-              </Card>
-            ))}
+                  <Button size="sm" variant="ghost" className="w-full mt-2 text-red-400 hover:text-red-300 hover:bg-red-500/10" onClick={() => handleRemoveMeal(index)}>
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Remove Meal
+                  </Button>
+                </Card>
+              );
+            })}
             
             {/* Add Meal Button */}
             <Button 
               variant="outline" 
-              className="w-full h-12 border-dashed border-white/30 hover:bg-white/5 hover:border-white/50"
+              className="w-full h-12 border-dashed border-green-400/40 hover:bg-green-500/10 hover:border-green-400/60 text-green-300"
               onClick={() => setShowAddMeal(true)}
             >
               <Plus className="w-4 h-4 mr-2" />
@@ -475,14 +741,14 @@ export function DailyScreen({ exercises, setExercises, meals, setMeals, muscleSt
         </div>
 
         {/* Daily Improvement Suggestion */}
-        <Card className="p-4 bg-gradient-to-r from-blue-500/15 to-cyan-500/10 border-blue-400/30">
+        <Card className="p-4 bg-gradient-to-r from-purple-500/15 to-pink-500/10 border-purple-400/30">
           <div className="flex items-start gap-3">
-            <div className="p-2 bg-blue-500/20 rounded-lg">
-              <Lightbulb className="w-5 h-5 text-blue-400" />
+            <div className="p-2 bg-purple-500/20 rounded-lg">
+              <Lightbulb className="w-5 h-5 text-purple-300 drop-shadow-[0_0_8px_rgba(192,132,252,0.6)]" />
             </div>
             <div>
-              <h4 className="text-sm font-bold text-blue-300 mb-1">Today's Tip</h4>
-              <p className="text-sm text-blue-200/80">
+              <h4 className="text-sm font-bold text-purple-300 mb-1">Today's Tip</h4>
+              <p className="text-sm text-purple-200/80">
                 Your dips form needs work. Focus on keeping elbows at 45° and control the descent.
               </p>
             </div>
@@ -493,17 +759,17 @@ export function DailyScreen({ exercises, setExercises, meals, setMeals, muscleSt
         <div>
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-white flex items-center gap-2">
-              <Users className="w-5 h-5 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
-              Friends Leaderboard
+              <Users className="w-5 h-5 text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.6)]" />
+              <span className="text-yellow-300">Friends Leaderboard</span>
             </h3>
           </div>
 
-          <Card className="divide-y divide-border bg-card border-border">
+          <Card className="divide-y divide-border bg-gradient-to-br from-yellow-500/10 to-amber-500/5 border-yellow-400/30 overflow-hidden">
             {friends.map((friend, index) => (
-              <div key={index} className={`p-4 flex items-center justify-between ${friend.name === 'You' ? 'bg-white/5' : ''}`}>
+              <div key={index} className={`p-4 flex items-center justify-between ${friend.name === 'You' ? 'bg-yellow-500/10' : ''}`}>
                 <div className="flex items-center gap-3">
-                  <span className="text-lg font-bold text-muted-foreground w-6">#{friend.rank}</span>
-                  <span className="font-semibold">{friend.name}</span>
+                  <span className="text-lg font-bold text-yellow-400 w-6">#{friend.rank}</span>
+                  <span className="font-semibold text-yellow-100">{friend.name}</span>
                 </div>
                 <span className={`text-xl font-bold ${getScoreTextColor(friend.score)}`}>
                   {friend.score}
